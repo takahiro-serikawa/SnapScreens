@@ -27,12 +27,7 @@ Public Class Form1
         MyBase.WndProc(m)
 
         If m.Msg = WM_HOTKEY AndAlso m.WParam.ToInt32() = hotkey_id Then
-            Dim bounds = Screen.GetBounds(Cursor.Position)
-            Dim captured As New Bitmap(bounds.Width, bounds.Height)
-            Using g = Graphics.FromImage(captured)
-                g.CopyFromScreen(Point.Empty, Point.Empty, bounds.Size)
-            End Using
-            Dim f As New Form2(captured)
+            Dim f As New Form2()
         End If
     End Sub
 
