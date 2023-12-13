@@ -1,0 +1,4 @@
+﻿■ SnapEZ (VB.NET版)
+簡易スクリーンショットツール
+
+Ctrl Alt F2	
