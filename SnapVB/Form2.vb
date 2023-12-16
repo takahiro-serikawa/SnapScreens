@@ -44,9 +44,8 @@
             Sub(sender, e)
                 ' 選択中
                 If isSelecting Then
-                    Dim p2 = e.Location
-                    selRect = New Rectangle(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y),
-                                            Math.Abs(p1.X - p2.X), Math.Abs(p1.Y - p2.Y))
+                    selRect = New Rectangle(Math.Min(p1.X, e.X), Math.Min(p1.Y, e.Y),
+                                            Math.Abs(p1.X - e.X), Math.Abs(p1.Y - e.Y))
                     picturebox1.Invalidate()
                 End If
             End Sub
