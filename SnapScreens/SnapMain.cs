@@ -21,6 +21,10 @@ namespace SnapScreens
             Debug.WriteLine($"app start");
             InitializeComponent();
 
+            foreach (var screen in Screen.AllScreens) {
+                Debug.WriteLine($"{screen.DeviceName}: {screen.Bounds}");
+            }
+
             // load application settings
             if (!Properties.Settings.Default.settings_is_valid) {
                 Properties.Settings.Default.Upgrade();
@@ -75,7 +79,7 @@ namespace SnapScreens
             base.WndProc(ref m);
 
             if (m.Msg == WM_HOTKEY && (int)m.WParam == hotkey_id) {
-                Debug.WriteLine($"hotkey pressed");
+                Debug.WriteLine($"hotkey pressed at {Cursor.Position}");
                 new CaptureForm(Cursor.Position);
             }
         }

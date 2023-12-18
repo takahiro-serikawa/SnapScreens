@@ -6,6 +6,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace SnapScreens
 
             Image = captured;
 
-            //this.Location = bounds.Location;
+            this.Location = bounds.Location;
             //this.WindowState = FormWindowState.Maximized;
             this.TopMost = true;
             this.Show();
@@ -137,16 +138,16 @@ namespace SnapScreens
 
         private void pic1_Paint(object sender, PaintEventArgs e)
         {
+            var ia = new ImageAttributes();
+            ia.SetColorMatrix(new ColorMatrix { Matrix00 = 0.5f, Matrix11 = 0.5f, Matrix22 = 0.5f });
+            e.Graphics.DrawImage(Image, new Rectangle(0,0, pic1.Width, pic1.Height),
+                0, 0, Image.Width, Image.Height, GraphicsUnit.Pixel, ia);
+
+            // draw selecting rectangle
+            e.Graphics.DrawImage(Image, selRect,
+                selRect.X, selRect.Y, selRect.Width, selRect.Height, GraphicsUnit.Pixel);
+
             using (var pen1 = new Pen(Color.Red, 1)) {
-                var ia = new ImageAttributes();
-                ia.SetColorMatrix(new ColorMatrix { Matrix00 = 0.5f, Matrix11 = 0.5f, Matrix22 = 0.5f });
-                e.Graphics.DrawImage(Image, pic1.Bounds,
-                    0, 0, Image.Width, Image.Height, GraphicsUnit.Pixel, ia);
-
-                // draw selecting rectangle
-                e.Graphics.DrawImage(Image, selRect,
-                    selRect.X, selRect.Y, selRect.Width, selRect.Height, GraphicsUnit.Pixel);
-
                 e.Graphics.DrawRectangle(pen1, selRect);
             }
         }
@@ -202,7 +203,7 @@ namespace SnapScreens
 
             case Keys.S:
                 if (e.Control) {
-                    // export to image file
+                    // CTRL-S: export to image file
                     saveFileDialog1.FileName = _filename;
                     if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
                         Image.Save(saveFileDialog1.FileName);
@@ -213,7 +214,7 @@ namespace SnapScreens
 
             case Keys.A:
                 if (e.Control) {
-                    // select all
+                    // CTRL-A: select all
                     selRect = new Rectangle(0, 0, pic1.Width, pic1.Height);
                     pic1.Invalidate();
                 }
@@ -226,6 +227,21 @@ namespace SnapScreens
                 // finish moving by cursor key
                 if (selRect.Width > 0 && selRect.Height > 0)
                     Clipboard.SetImage(GetCropped(selRect));
+                break;
+
+            case Keys.L:    // for debug
+                if (e.Control) {
+                    pic1.Invalidate();
+                }
+                break;
+
+            case Keys.M:    // for debug
+                if (e.Control) {
+                    if (this.WindowState == FormWindowState.Maximized)
+                        this.WindowState = FormWindowState.Normal;
+                    else
+                        this.WindowState = FormWindowState.Maximized;
+                }
                 break;
 
             }
