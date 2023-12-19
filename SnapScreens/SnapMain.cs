@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Environment;
 
 namespace SnapScreens
 {
@@ -20,7 +21,7 @@ namespace SnapScreens
         {
             Debug.WriteLine($"app start");
             InitializeComponent();
-
+            
             foreach (var screen in Screen.AllScreens) {
                 Debug.WriteLine($"{screen.DeviceName}: {screen.Bounds}");
             }
@@ -42,7 +43,14 @@ namespace SnapScreens
                     break;
                 }
 
+            SnapPath = Path.Combine(GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.Create), "SnapScreens");
+            Debug.WriteLine($" SnapPath={SnapPath}");
+            //foreach (string filename in  Directory.GetFiles(SnapPath)) {
+
+            //}
         }
+
+        string SnapPath;
 
         ~SnapMain()
         {

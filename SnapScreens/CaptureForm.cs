@@ -6,6 +6,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -23,20 +24,22 @@ namespace SnapScreens
             _filename = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             Debug.WriteLine($"capture {Caption} new");
 
-            var bounds = Screen.GetBounds(location);
-            Debug.WriteLine($" screen bounds = {bounds}");
-            var captured = new Bitmap(bounds.Width, bounds.Height);
+            ScreenRect = Screen.GetBounds(location);
+            Debug.WriteLine($" screen bounds = {ScreenRect}");
+            var captured = new Bitmap(ScreenRect.Width, ScreenRect.Height);
             using (var g = Graphics.FromImage(captured)) {
-                g.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
+                g.CopyFromScreen(ScreenRect.Location, Point.Empty, ScreenRect.Size);
             }
 
             Image = captured;
 
-            this.Location = bounds.Location;
+            this.Location = ScreenRect.Location;
             //this.WindowState = FormWindowState.Maximized;
             this.TopMost = true;
             this.Show();
             this.TopMost = false;
+            this.BringToFront();
+            this.Activate();
         }
 
         Image _image;
@@ -99,9 +102,14 @@ namespace SnapScreens
             Debug.WriteLine($"capture {Caption} FormClosed({e.CloseReason})");
         }
 
+
         bool isSelecting = false;
         Point p1 = Point.Empty;
-        Rectangle selRect = Rectangle.Empty;
+        Point p2 = Point.Empty;
+        Rectangle SelRect {
+            get { return new Rectangle(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y), Math.Abs(p2.X-p1.X), Math.Abs(p2.Y-p1.Y)); }
+        }
+        Rectangle ScreenRect = Rectangle.Empty;
 
         private void pic1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -118,11 +126,9 @@ namespace SnapScreens
             //Debug.WriteLine($"capture({Caption}) MouseMove({e.Button}, {e.Location})");
 
             if (isSelecting) {
-                selRect = new Rectangle(Math.Min(p1.X, e.X), Math.Min(p1.Y, e.Y),
-                    Math.Abs(p1.X-e.X), Math.Abs(p1.Y-e.Y));
-
+                p2 = e.Location;
                 pic1.Invalidate();
-            }
+            } 
         }
 
         private void pic1_MouseUp(object sender, MouseEventArgs e)
@@ -131,24 +137,36 @@ namespace SnapScreens
 
             if (e.Button == MouseButtons.Left) {
                 isSelecting = false;
-                if (selRect.Width > 0 && selRect.Height > 0)
-                    Clipboard.SetImage(GetCropped(selRect));
+                if (p1.X != p2.X && p1.Y != p2.Y)
+                    Clipboard.SetImage(GetCropped(SelRect));
             }
         }
 
         private void pic1_Paint(object sender, PaintEventArgs e)
         {
-            var ia = new ImageAttributes();
-            ia.SetColorMatrix(new ColorMatrix { Matrix00 = 0.5f, Matrix11 = 0.5f, Matrix22 = 0.5f });
-            e.Graphics.DrawImage(Image, new Rectangle(0,0, pic1.Width, pic1.Height),
-                0, 0, Image.Width, Image.Height, GraphicsUnit.Pixel, ia);
+            if (p1.X == p2.X && p1.Y == p2.Y) {
+                e.Graphics.DrawImage(Image, new Rectangle(0, 0, pic1.Width, pic1.Height),
+                    0, 0, Image.Width, Image.Height, GraphicsUnit.Pixel);
+            } else {
+                var ia = new ImageAttributes();
+                ia.SetColorMatrix(new ColorMatrix { Matrix00 = 0.3f, Matrix11 = 0.3f, Matrix22 = 0.3f });
+                e.Graphics.DrawImage(Image, new Rectangle(0, 0, pic1.Width, pic1.Height),
+                    0, 0, Image.Width, Image.Height, GraphicsUnit.Pixel, ia);
 
-            // draw selecting rectangle
-            e.Graphics.DrawImage(Image, selRect,
-                selRect.X, selRect.Y, selRect.Width, selRect.Height, GraphicsUnit.Pixel);
+                // draw selecting rectangle
+                e.Graphics.DrawImage(Image, SelRect,
+                    SelRect.X, SelRect.Y, SelRect.Width, SelRect.Height, GraphicsUnit.Pixel);
 
-            using (var pen1 = new Pen(Color.Red, 1)) {
-                e.Graphics.DrawRectangle(pen1, selRect);
+                using (var pen1 = new Pen(Color.Red, 1))
+                using (var pen2 = new Pen(Color.Black, 1)) {
+                    pen2.DashStyle = DashStyle.Dash;
+                    e.Graphics.DrawRectangle(pen1, SelRect.X, SelRect.Y, SelRect.Width-1, SelRect.Height-1);
+                    e.Graphics.DrawRectangle(pen2, SelRect.X, SelRect.Y, SelRect.Width-1, SelRect.Height-1);
+                    //e.Graphics.DrawLine(pen1, 0, p1.Y, pic1.Width, p1.Y);
+                    //e.Graphics.DrawLine(pen1, p1.X, 0, p1.X, pic1.Height);
+                    //e.Graphics.DrawLine(pen1, 0, p2.Y, pic1.Width, p2.Y);
+                    //e.Graphics.DrawLine(pen1, p2.X, 0, p2.X, pic1.Height);
+                }
             }
         }
 
@@ -215,8 +233,7 @@ namespace SnapScreens
             case Keys.A:
                 if (e.Control) {
                     // CTRL-A: select all
-                    selRect = new Rectangle(0, 0, pic1.Width, pic1.Height);
-                    pic1.Invalidate();
+                    SelectAll();
                 }
                 break;
 
@@ -225,8 +242,8 @@ namespace SnapScreens
             case Keys.Up:
             case Keys.Down:
                 // finish moving by cursor key
-                if (selRect.Width > 0 && selRect.Height > 0)
-                    Clipboard.SetImage(GetCropped(selRect));
+                if (p1.X != p2.X && p1.Y != p2.Y)
+                    Clipboard.SetImage(GetCropped(SelRect));
                 break;
 
             case Keys.L:    // for debug
@@ -249,20 +266,17 @@ namespace SnapScreens
 
         private void MoveSelRect(int dx, int dy, int dw, int dh)
         {
-            selRect.X += dx;
-            if (selRect.X > pic1.Width - selRect.Width)
-                selRect.X = pic1.Width - selRect.Width;
-            if (selRect.X < 0)
-                selRect.X = 0;
+            p1.X += dx;
+            p2.X += dx;
+            p1.Y += dy;
+            p2.Y += dy;
 
-            selRect.Y += dy;
-            if (selRect.Y > pic1.Height - selRect.Height)
-                selRect.Y = pic1.Height - selRect.Height;
-            if (selRect.Y < 0)
-                selRect.Y = 0;
+            // 移動制限
+
+            // サイズ変更
 
             pic1.Invalidate();
-            Debug.WriteLine($" selRect -> {selRect}");
+            Debug.WriteLine($" selRect -> {SelRect}");
         }
 
         Bitmap GetCropped(Rectangle selRect)
@@ -282,16 +296,32 @@ namespace SnapScreens
 
         void CropForm()
         {
-            if (selRect.Width > 0 && selRect.Height > 0) {
-                Image = GetCropped(selRect);
+            if (p1.X != p2.X && p1.Y != p2.Y) {
+                Image = GetCropped(SelRect);
                 this.ClientSize = Image.Size;
-                this.Location = selRect.Location;
                 this.WindowState = FormWindowState.Normal;
+                this.Location = new Point(ScreenRect.X + SelRect.X, ScreenRect.Y + SelRect.Y);
+                this.ClientSize = SelRect.Size;
 
-                // select all
-                selRect.Location = Point.Empty;
+                SelectAll();
             }
         }
 
+        void SelectAll()
+        {
+            p1 = new Point(0, 0);
+            p2 = new Point(pic1.Width, pic1.Height);
+            pic1.Invalidate();
+        }
+
+        private void CaptureForm_Activated(object sender, EventArgs e)
+        {
+            Debug.WriteLine($"capture {Caption} Activated()");
+        }
+
+        private void CaptureForm_Deactivate(object sender, EventArgs e)
+        {
+            Debug.WriteLine($"capture {Caption} DeActivated()");
+        }
     }
 }

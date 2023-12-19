@@ -39,9 +39,9 @@
             // 
             this.pic1.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pic1.Location = new System.Drawing.Point(0, 0);
-            this.pic1.Margin = new System.Windows.Forms.Padding(4);
+            this.pic1.Margin = new System.Windows.Forms.Padding(2);
             this.pic1.Name = "pic1";
-            this.pic1.Size = new System.Drawing.Size(472, 402);
+            this.pic1.Size = new System.Drawing.Size(236, 193);
             this.pic1.TabIndex = 0;
             this.pic1.TabStop = false;
             this.pic1.Paint += new System.Windows.Forms.PaintEventHandler(this.pic1_Paint);
@@ -57,46 +57,51 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(718, 22);
+            this.label2.Location = new System.Drawing.Point(359, 11);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(0, 25);
+            this.label2.Size = new System.Drawing.Size(0, 12);
             this.label2.TabIndex = 2;
             // 
             // label3
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(699, 406);
+            this.label3.Location = new System.Drawing.Point(350, 195);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(0, 25);
+            this.label3.Size = new System.Drawing.Size(0, 12);
             this.label3.TabIndex = 3;
             // 
             // label4
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(28, 406);
+            this.label4.Location = new System.Drawing.Point(14, 195);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(0, 25);
+            this.label4.Size = new System.Drawing.Size(0, 12);
             this.label4.TabIndex = 4;
             // 
             // CaptureForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Gray;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(400, 216);
             this.ControlBox = false;
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.pic1);
             this.KeyPreview = true;
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "CaptureForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Activated += new System.EventHandler(this.CaptureForm_Activated);
+            this.Deactivate += new System.EventHandler(this.CaptureForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CaptureForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CaptureForm_FormClosed);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CaptureForm_KeyDown);
