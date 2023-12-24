@@ -23,11 +23,11 @@ namespace SnapScreens
         {
             InitializeComponent();
 
-            rec.ID = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            Caption = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             Debug.WriteLine($"capture {Caption} new");
 
             var bounds = Screen.GetBounds(location);
-            rec.ScreenRect = new xRectangle(bounds);
+            //rec.ScreenRect = new xRectangle(bounds);
             Debug.WriteLine($" screen bounds = {bounds}");
             var captured = new Bitmap(bounds.Width, bounds.Height);
             using (var g = Graphics.FromImage(captured)) {
@@ -39,7 +39,6 @@ namespace SnapScreens
             otherRects = EnumWin.EnumWindowsOnScreen();
 
             this.Location = bounds.Location;
-            //this.WindowState = FormWindowState.Maximized;
             this.TopMost = true;
             this.Show();
             this.TopMost = false;
@@ -56,98 +55,23 @@ namespace SnapScreens
             SelRect = otherRects[otherIndex];
         }
 
+        Bitmap _image = null;
+        string Caption = "";
+
         Bitmap Image
         {
             set {
-                rec.Bitmap = value;
+                _image = value;
                 pic1.Size = value.Size;
                 pic1.Invalidate();
             }
-            get { return rec.Bitmap; }
-        }
-
-        public CaptureForm(string filename)
-        {
-            InitializeComponent();
-
-            rec.ID = "";
-            //_filename = filename;
-            Debug.WriteLine($"capture {Caption} new");
-
-            var bitmap = new Bitmap(filename);
-            Debug.WriteLine($" bitmap size = {bitmap.Size}");
-
-            Image = bitmap;
-
-            //this.Location = bounds.Location;
-            this.WindowState = FormWindowState.Normal;
-            this.Show();
-        }
-
-        public struct xRectangle
-        {
-            public int x,y, width, height;
-            public xRectangle(Rectangle r)
-            {
-                x = r.X;
-                y = r.Y;
-                width = r.Width;
-                height = r.Height;
-            }
-        }
-
-        // image list
-        [XmlRoot("item")]
-        public class ImageRec
-        {
-            [XmlAttribute("id")]
-            public string ID;
-
-            [XmlElement("bounds_rect")]
-            public xRectangle ScreenRect;
-
-            [XmlElement("select_rect")]
-            public xRectangle SelectRect;
-
-            [XmlIgnore]
-            public Bitmap Bitmap;
-        }
-
-        public static string SnapPath;
-
-        ImageRec rec = new ImageRec();
-
-        void SaveRec()
-        {
-            XmlSerializer ser = new XmlSerializer(typeof(ImageRec));
-
-            var id_xml = Path.Combine(SnapPath, rec.ID+".xml");
-            using (var wr = new StreamWriter(id_xml)) {
-                ser.Serialize(wr, rec);
-            }
-
-            var id_png = Path.Combine(SnapPath, rec.ID+".png");
-            rec.Bitmap.Save(id_png);
-        }
-
-        //string _filename = "";
-
-        string Caption
-        {
-            get { return rec.ID; }
+            get { return _image; }
         }
 
         private void CaptureForm_Resize(object sender, EventArgs e)
         {
             Debug.WriteLine($"capture {Caption} Resize({this.WindowState}, {this.Size})");
 
-            if (this.WindowState == FormWindowState.Maximized) {
-                this.Text = "";
-                this.ControlBox = false;
-            } else {
-                this.Text = Caption;
-                this.ControlBox = true;
-            }
         }
 
         private void CaptureForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -254,122 +178,121 @@ namespace SnapScreens
             }
         }
 
-              private void CaptureForm_KeyDown(object sender, KeyEventArgs e)
+        private void CaptureForm_KeyDown(object sender, KeyEventArgs e)
         {
-            var kk = (e.KeyCode, e.Modifiers);
-
-            switch (kk) {
-            case (Keys.Left, Keys.Control):
-                //p2.X--;
-                break;
-            //case (Keys.Left, Keys.Shift):
-            //    p1.X--;
-            //    break;
-            //case (Keys.Left, 0):
-            //    p1.X--; p2.X--;
-            //    break;
-
-            //case (Keys.Right, Keys.Control):
-            //    p1.X++;
-            //    break;
-            //case (Keys.Right, Keys.Shift):
-            //    p2.X++;
-            //    break;
-            //case (Keys.Right, 0):
-            //    p1.X++; p2.X++;
-            //    break;
-
-            //case (Keys.Up, Keys.Control):
-            //    p2.Y--;
-            //    break;
-            //case (Keys.Up, Keys.Shift):
-            //    p1.Y--;
-            //    break;
-            //case (Keys.Up, 0):
-            //    p1.Y--; p2.Y--;
-            //    break;
-
-            //case (Keys.Down, Keys.Control):
-            //    p1.Y++;
-            //    break;
-            //case (Keys.Down, Keys.Shift):
-            //    p2.Y++;
-            //    break;
-            //case (Keys.Down, 0):
-            //    p1.Y++; p2.Y++;
-            //    break;
-            }
-            pic1.Invalidate();
-
             Debug.WriteLine($"capture {Caption} KeyDown({e.Modifiers}, {e.KeyCode})");
 
-            //var k = (e.KeyCode, e.Modifiers);
-            //if (keymap.ContainsKey(k)) {
-            //    keymap[k]();
-            //    pic1.Invalidate();
-            //}
+            switch ((e.KeyCode, e.Modifiers)) {
+            case (Keys.Left, Keys.Control):
+                p1.X--;
+                break;
+            case (Keys.Left, Keys.Shift):
+                p2.X--;
+                break;
+            case (Keys.Left, 0):
+                p1.X--; 
+                p2.X--;
+                break;
+
+            case (Keys.Right, Keys.Control):
+                p1.X++;
+                break;
+            case (Keys.Right, Keys.Shift):
+                p2.X++;
+                break;
+            case (Keys.Right, 0):
+                p1.X++; 
+                p2.X++;
+                break;
+
+            case (Keys.Up, Keys.Control):
+                p1.Y--;
+                break;
+            case (Keys.Up, Keys.Shift):
+                p2.Y--;
+                break;
+            case (Keys.Up, 0):
+                p1.Y--; 
+                p2.Y--;
+                break;
+
+            case (Keys.Down, Keys.Control):
+                p1.Y++;
+                break;
+            case (Keys.Down, Keys.Shift):
+                p2.Y++;
+                break;
+            case (Keys.Down, 0):
+                p1.Y++; 
+                p2.Y++;
+                break;
+
+            default:
+                return;
+            }
+            pic1.Invalidate();
         }
 
         private void CaptureForm_KeyUp(object sender, KeyEventArgs e)
         {
             Debug.WriteLine($"capture {Caption} KeyUp({e.Modifiers}, {e.KeyCode})");
 
-            switch (e.KeyCode) {
-            case Keys.Escape:
+            switch ((e.KeyCode, e.Modifiers)) {
+            case (Keys.Escape, Keys.None):
                 if (this.WindowState == FormWindowState.Maximized)
                     this.Close();
                 break;
 
-            case Keys.Enter:
+            case (Keys.Enter, Keys.None):
                 CropForm();
-                rec.SelectRect = new xRectangle(SelRect);
-                this.SaveRec();
+                //rec.SelectRect = new xRectangle(SelRect);
+                //this.SaveRec();
                 break;
 
-            case Keys.Tab:
+            case (Keys.Tab, Keys.None):
                 SelectNextRect();
                 break;
 
-            case Keys.S:
-                if (e.Control) {
-                    // CTRL-S: export to image file
-                    //saveFileDialog1.FileName = _filename;
-                    if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
-                        Image.Save(saveFileDialog1.FileName);
-                        //_filename = saveFileDialog1.FileName;
-                    }
+            case (Keys.S, Keys.Control):
+                // CTRL-S: export to image file
+                //saveFileDialog1.FileName = _filename;
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
+                    Image.Save(saveFileDialog1.FileName);
+                    //_filename = saveFileDialog1.FileName;
                 }
                 break;
 
-            case Keys.A:
-                if (e.Control) {
-                    // CTRL-A: select all
-                    SelectAll();
-                }
+            case (Keys.A, Keys.Control):
+                // CTRL-A: select all
+                SelectAll();
                 break;
 
-            case Keys.Left:
-            case Keys.Right:
-            case Keys.Up:
-            case Keys.Down:
+            case (Keys.Left, Keys.None):
+            case (Keys.Left, Keys.Shift):
+            case (Keys.Left, Keys.Control):
+            case (Keys.Right, Keys.None):
+            case (Keys.Right, Keys.Shift):
+            case (Keys.Right, Keys.Control):
+            case (Keys.Up, Keys.None):
+            case (Keys.Up, Keys.Shift):
+            case (Keys.Up, Keys.Control):
+            case (Keys.Down, Keys.None):
+            case (Keys.Down, Keys.Shift):
+            case (Keys.Down, Keys.Control):
                 // finish moving by cursor key
                 if (p1.X != p2.X && p1.Y != p2.Y)
                     Clipboard.SetImage(GetCropped(SelRect));
                 break;
 
-            case Keys.L:    // for debug
-                if (e.Control) {
-                    pic1.Invalidate();
-                }
+            case (Keys.L, Keys.Control):    // for debug
+                pic1.Invalidate();
                 break;
 
-            case Keys.M:    // for debug
-                if (e.Control) {
-                    if (this.WindowState == FormWindowState.Maximized)
-                        this.WindowState = FormWindowState.Normal;
-                    else
-                        this.WindowState = FormWindowState.Maximized;
-                }
+            case (Keys.M, Keys.Control):    // for debug
+                if (this.WindowState == FormWindowState.Maximized)
+                    this.WindowState = FormWindowState.Normal;
+                else
+                    this.WindowState = FormWindowState.Maximized;
                 break;
 
             }
@@ -394,13 +317,14 @@ namespace SnapScreens
             if (p1.X == p2.X || p1.Y == p2.Y)
                 SelectAll();
 
-            Image = GetCropped(SelRect);
-            this.ClientSize = Image.Size;
-            this.WindowState = FormWindowState.Normal;
-            this.Location = this.PointToScreen(SelRect.Location);
-            this.ClientSize = SelRect.Size;
+            var image = GetCropped(SelRect);
+            var f = new ImageForm(this.PointToScreen(SelRect.Location), image);
+            //f.ClientSize = Image.Size;
+            //f.WindowState = FormWindowState.Normal;
+            //f.Location = this.PointToScreen(SelRect.Location);
+            //f.ClientSize = SelRect.Size;
 
-            SelectAll();
+            this.Close();
         }
 
         void SelectAll()

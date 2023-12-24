@@ -27,95 +27,90 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SnapMain));
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.SettingsItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.QuitItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.applyButton = new System.Windows.Forms.Button();
-            this.importItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.contextMenuStrip1.SuspendLayout();
-            this.SuspendLayout();
+            notifyIcon1 = new NotifyIcon(components);
+            contextMenuStrip1 = new ContextMenuStrip(components);
+            importItem = new ToolStripMenuItem();
+            SettingsItem = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripSeparator();
+            QuitItem = new ToolStripMenuItem();
+            applyButton = new Button();
+            openFileDialog1 = new OpenFileDialog();
+            contextMenuStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // notifyIcon1
             // 
-            this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "snap screens";
-            this.notifyIcon1.Visible = true;
+            notifyIcon1.ContextMenuStrip = contextMenuStrip1;
+            notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
+            notifyIcon1.Text = "snap screens";
+            notifyIcon1.Visible = true;
             // 
             // contextMenuStrip1
             // 
-            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importItem,
-            this.SettingsItem,
-            this.toolStripMenuItem1,
-            this.QuitItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(255, 124);
-            // 
-            // SettingsItem
-            // 
-            this.SettingsItem.Name = "SettingsItem";
-            this.SettingsItem.Size = new System.Drawing.Size(300, 38);
-            this.SettingsItem.Text = "Settings ...";
-            this.SettingsItem.Click += new System.EventHandler(this.SettingsItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(297, 6);
-            // 
-            // QuitItem
-            // 
-            this.QuitItem.Name = "QuitItem";
-            this.QuitItem.Size = new System.Drawing.Size(300, 38);
-            this.QuitItem.Text = "Quit";
-            this.QuitItem.Click += new System.EventHandler(this.QuitItem_Click);
-            // 
-            // applyButton
-            // 
-            this.applyButton.Location = new System.Drawing.Point(606, 383);
-            this.applyButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
-            this.applyButton.Name = "applyButton";
-            this.applyButton.Size = new System.Drawing.Size(150, 44);
-            this.applyButton.TabIndex = 1;
-            this.applyButton.Text = "apply";
-            this.applyButton.UseVisualStyleBackColor = true;
-            this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
+            contextMenuStrip1.ImageScalingSize = new Size(32, 32);
+            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { importItem, SettingsItem, toolStripMenuItem1, QuitItem });
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(255, 124);
             // 
             // importItem
             // 
-            this.importItem.Name = "importItem";
-            this.importItem.Size = new System.Drawing.Size(300, 38);
-            this.importItem.Text = "Import Image ...";
-            this.importItem.Click += new System.EventHandler(this.importItem_Click);
+            importItem.Name = "importItem";
+            importItem.Size = new Size(254, 38);
+            importItem.Text = "Import Image ...";
+            importItem.Click += importItem_Click;
+            // 
+            // SettingsItem
+            // 
+            SettingsItem.Name = "SettingsItem";
+            SettingsItem.Size = new Size(254, 38);
+            SettingsItem.Text = "Settings ...";
+            SettingsItem.Click += SettingsItem_Click;
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(251, 6);
+            // 
+            // QuitItem
+            // 
+            QuitItem.Name = "QuitItem";
+            QuitItem.Size = new Size(254, 38);
+            QuitItem.Text = "Quit";
+            QuitItem.Click += QuitItem_Click;
+            // 
+            // applyButton
+            // 
+            applyButton.Location = new Point(656, 490);
+            applyButton.Margin = new Padding(6, 8, 6, 8);
+            applyButton.Name = "applyButton";
+            applyButton.Size = new Size(162, 56);
+            applyButton.TabIndex = 1;
+            applyButton.Text = "apply";
+            applyButton.UseVisualStyleBackColor = true;
+            applyButton.Click += applyButton_Click;
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.DefaultExt = "png";
-            this.openFileDialog1.FileName = "openFileDialog1";
+            openFileDialog1.DefaultExt = "png";
+            openFileDialog1.FileName = "openFileDialog1";
             // 
             // SnapMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.applyButton);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "SnapMain";
-            this.ShowInTaskbar = false;
-            this.Text = "SnapScreens";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SnapSettings_FormClosing);
-            this.contextMenuStrip1.ResumeLayout(false);
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(13F, 32F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(867, 576);
+            Controls.Add(applyButton);
+            Margin = new Padding(4, 5, 4, 5);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "SnapMain";
+            ShowInTaskbar = false;
+            Text = "SnapScreens";
+            FormClosing += SnapSettings_FormClosing;
+            contextMenuStrip1.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion

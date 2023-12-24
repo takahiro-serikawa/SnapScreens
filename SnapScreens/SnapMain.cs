@@ -47,8 +47,8 @@ namespace SnapScreens
                     break;
                 }
 
-            CaptureForm.SnapPath = Path.Combine(GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.Create), "SnapScreens");
-            Debug.WriteLine($" SnapPath={CaptureForm.SnapPath}");
+            ImageForm.SnapPath = Path.Combine(GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.Create), "SnapScreens");
+            Debug.WriteLine($" SnapPath={ImageForm.SnapPath}");
             //RestoreImages();
         }
 
@@ -108,8 +108,10 @@ namespace SnapScreens
         {
             Debug.WriteLine($"menu; import");
 
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                new CaptureForm(openFileDialog1.FileName);
+            if (openFileDialog1.ShowDialog() == DialogResult.OK) {
+                var f = new ImageForm();
+                f.LoadImage(openFileDialog1.FileName);
+            }
         }
 
         private void SettingsItem_Click(object sender, EventArgs e)

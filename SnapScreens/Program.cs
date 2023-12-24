@@ -11,7 +11,10 @@ namespace SnapScreens
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new SnapMain());
+            Application.ThreadException += (sender, e) =>
+                MessageBox.Show(e.Exception.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            new SnapMain();
+            Application.Run();
         }
     }
 }
