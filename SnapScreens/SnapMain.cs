@@ -8,9 +8,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using static System.Environment;
 
 namespace SnapScreens
@@ -27,13 +29,15 @@ namespace SnapScreens
             }
 
             // load application settings
-            if (!Properties.Settings.Default.settings_is_valid) {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.settings_is_valid = true;
-                Properties.Settings.Default.Save();
-            }
-            var hotkey = (Keys)Enum.Parse(typeof(Keys), Properties.Settings.Default.HotKey);
-            var modkeys = (MODKEY)Properties.Settings.Default.ModKeys;
+            //if (!Properties.Settings.Default.settings_is_valid) {
+            //    Properties.Settings.Default.Upgrade();
+            //    Properties.Settings.Default.settings_is_valid = true;
+            //    Properties.Settings.Default.Save();
+            //}
+            //var hotkey = (Keys)Enum.Parse(typeof(Keys), Properties.Settings.Default.HotKey);
+            //var modkeys = (MODKEY)Properties.Settings.Default.ModKeys;
+            var hotkey = Keys.F2;
+            var modkeys = MODKEY.ALT | MODKEY.CONTROL;
 
             // register global hot key
             for (int i = 1; i < 100; i++)
@@ -43,14 +47,10 @@ namespace SnapScreens
                     break;
                 }
 
-            SnapPath = Path.Combine(GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.Create), "SnapScreens");
-            Debug.WriteLine($" SnapPath={SnapPath}");
-            //foreach (string filename in  Directory.GetFiles(SnapPath)) {
-
-            //}
+            CaptureForm.SnapPath = Path.Combine(GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.Create), "SnapScreens");
+            Debug.WriteLine($" SnapPath={CaptureForm.SnapPath}");
+            //RestoreImages();
         }
-
-        string SnapPath;
 
         ~SnapMain()
         {
@@ -99,6 +99,11 @@ namespace SnapScreens
         extern static int UnregisterHotKey(IntPtr hWnd, int id);
 
 
+        //string SnapPath;
+
+
+        //readonly List<ImageRec> ImageList = new List<ImageRec>();
+
         private void importItem_Click(object sender, EventArgs e)
         {
             Debug.WriteLine($"menu; import");
@@ -125,18 +130,10 @@ namespace SnapScreens
         {
             //...
 
-            Properties.Settings.Default.Save();
+            //Properties.Settings.Default.Save();
         }
 
-        // image list
-        class ImageRec
-        {
-            public Bitmap Bitmap;
-            public Rectangle Rect;
-            public string Filename;
-        }
 
-        readonly List<ImageRec> ImageList = new List<ImageRec>();
 
 
     }
