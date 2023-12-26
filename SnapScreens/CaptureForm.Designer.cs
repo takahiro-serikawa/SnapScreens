@@ -41,7 +41,7 @@
             pic1.Location = new Point(0, 0);
             pic1.Margin = new Padding(4, 5, 4, 5);
             pic1.Name = "pic1";
-            pic1.Size = new Size(511, 515);
+            pic1.Size = new Size(274, 428);
             pic1.TabIndex = 0;
             pic1.TabStop = false;
             pic1.Paint += pic1_Paint;
@@ -57,7 +57,7 @@
             // 
             label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label2.AutoSize = true;
-            label2.Location = new Point(778, 29);
+            label2.Location = new Point(551, 29);
             label2.Margin = new Padding(4, 0, 4, 0);
             label2.Name = "label2";
             label2.Size = new Size(0, 32);
@@ -67,7 +67,7 @@
             // 
             label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             label3.AutoSize = true;
-            label3.Location = new Point(758, 520);
+            label3.Location = new Point(531, 424);
             label3.Margin = new Padding(4, 0, 4, 0);
             label3.Name = "label3";
             label3.Size = new Size(0, 32);
@@ -77,7 +77,7 @@
             // 
             label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label4.AutoSize = true;
-            label4.Location = new Point(30, 520);
+            label4.Location = new Point(30, 424);
             label4.Margin = new Padding(4, 0, 4, 0);
             label4.Name = "label4";
             label4.Size = new Size(0, 32);
@@ -89,7 +89,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             BackColor = Color.Gray;
-            ClientSize = new Size(867, 576);
+            ClientSize = new Size(640, 480);
             ControlBox = false;
             Controls.Add(label4);
             Controls.Add(label3);
@@ -99,9 +99,6 @@
             Margin = new Padding(4, 5, 4, 5);
             Name = "CaptureForm";
             StartPosition = FormStartPosition.Manual;
-            Activated += CaptureForm_Activated;
-            Deactivate += CaptureForm_Deactivate;
-            FormClosing += CaptureForm_FormClosing;
             FormClosed += CaptureForm_FormClosed;
             KeyDown += CaptureForm_KeyDown;
             KeyUp += CaptureForm_KeyUp;

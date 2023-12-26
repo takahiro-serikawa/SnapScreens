@@ -82,7 +82,7 @@ namespace SnapScreens
                     if (GetWindowRect(hWnd, out rect)) {
                         var r = new Rectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top);
                         bounds[r] = 1;
-                        Debug.WriteLine($"text={tsb}, class={csb},\r\n {{{rect.Left},{rect.Top}, {rect.Right-rect.Left},{rect.Bottom-rect.Top}}}");
+                        //Debug.WriteLine($"text={tsb}, class={csb},\r\n {{{rect.Left},{rect.Top}, {rect.Right-rect.Left},{rect.Bottom-rect.Top}}}");
                         //Debug.WriteLine($"process={processName}, B {style & WS_BORDER}, T {exStyle & WS_EX_TOOLWINDOW}");
                     }
                 }

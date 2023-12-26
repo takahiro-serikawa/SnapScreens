@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿// image display form
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml.Serialization;
-using static SnapScreens.EnumWin;
 
 namespace SnapScreens
 {
@@ -87,7 +78,7 @@ namespace SnapScreens
 
         public static string SnapPath = "";
 
-        ImageRec rec = new ImageRec();
+        readonly ImageRec rec = new ImageRec();
 
         void SaveRec()
         {
@@ -119,26 +110,14 @@ namespace SnapScreens
             Debug.WriteLine($"image {rec.ID} Resize({this.WindowState}, {this.Size})");
         }
 
-        private void ImageForm_Activated(object sender, EventArgs e)
-        {
-            Debug.WriteLine($"image {rec.ID} Activate()");
-        }
-
-        private void ImageForm_Deactivate(object sender, EventArgs e)
-        {
-            Debug.WriteLine($"image {rec.ID} Deactivate()");
-        }
-
         private void ImageForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Debug.WriteLine($"image {rec.ID} FormClosing({e.CloseReason})");
-
         }
 
         private void ImageForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Debug.WriteLine($"image {rec.ID} FormClosed({e.CloseReason})");
-
         }
 
         private void ImageForm_KeyDown(object sender, KeyEventArgs e)

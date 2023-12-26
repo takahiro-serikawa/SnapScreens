@@ -1,19 +1,7 @@
 ﻿// SnapScreens main/settings form
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Serialization;
-using static System.Environment;
 
 namespace SnapScreens
 {
@@ -47,7 +35,8 @@ namespace SnapScreens
                     break;
                 }
 
-            ImageForm.SnapPath = Path.Combine(GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.Create), "SnapScreens");
+            ImageForm.SnapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, 
+                Environment.SpecialFolderOption.Create), "SnapScreens");
             Debug.WriteLine($" SnapPath={ImageForm.SnapPath}");
             //RestoreImages();
         }

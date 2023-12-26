@@ -37,7 +37,7 @@
             pic1.Location = new Point(0, 0);
             pic1.Margin = new Padding(4, 5, 4, 5);
             pic1.Name = "pic1";
-            pic1.Size = new Size(511, 515);
+            pic1.Size = new Size(315, 435);
             pic1.TabIndex = 1;
             pic1.TabStop = false;
             pic1.Paint += pic1_Paint;
@@ -48,14 +48,12 @@
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             BackColor = Color.Gray;
-            ClientSize = new Size(1055, 649);
+            ClientSize = new Size(640, 480);
             Controls.Add(pic1);
             KeyPreview = true;
             Name = "ImageForm";
             StartPosition = FormStartPosition.Manual;
             Text = "ImageForm";
-            Activated += ImageForm_Activated;
-            Deactivate += ImageForm_Deactivate;
             FormClosing += ImageForm_FormClosing;
             FormClosed += ImageForm_FormClosed;
             KeyDown += ImageForm_KeyDown;
