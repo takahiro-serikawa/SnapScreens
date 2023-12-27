@@ -30,6 +30,7 @@ namespace SnapScreens
             this.Location = bounds.Location;
             this.TopMost = true;
             this.Show();
+            this.Activate();
             this.TopMost = false;
             this.WindowState = FormWindowState.Maximized;
         }
@@ -51,28 +52,20 @@ namespace SnapScreens
         void SelectNextRect()
         {
             otherIndex = (otherIndex+1) % otherRects.Count;
-            SelRect = this.RectangleToClient(otherRects[otherIndex]);
+            //SelRect = this.RectangleToClient(otherRects[otherIndex]);
+            var r = this.RectangleToClient(otherRects[otherIndex]);
+            p1 = r.Location;
+            p2 = r.Location + r.Size;
+            pic1.Invalidate();
         }
 
 
         bool isSelecting = false;
         Point p1 = Point.Empty;
         Point p2 = Point.Empty;
-        Rectangle SelRect
-        {
-            get {
-                return new Rectangle(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y), Math.Abs(p2.X-p1.X), Math.Abs(p2.Y-p1.Y));
-            }
-            set {
-                p1.X = value.X;
-                p1.Y = value.Y;
-                p2.X = value.X + value.Width;
-                p2.Y = value.Y + value.Height;
-                pic1.Invalidate();
-            }
-        }
+        Rectangle SelRect => new(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y), Math.Abs(p2.X-p1.X), Math.Abs(p2.Y-p1.Y));
 
-        Rectangle ImageBounds => new(Point.Empty, image.Size);
+        //Rectangle ImageBounds => new(Point.Empty, image.Size);
 
         private void pic1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -129,6 +122,14 @@ namespace SnapScreens
             pen1.Color = Color.Red;
             pen1.DashStyle = DashStyle.Dash;
             e.Graphics.DrawRectangle(pen1, SelRect.X, SelRect.Y, SelRect.Width-1, SelRect.Height-1);
+
+            // draw coordinates
+            //using var br = new SolidBrush(Color.Red);
+            //var s1 = this.PointToScreen(p1);
+            //e.Graphics.DrawString($"{s1}", this.Font, br, s1.X+2, s1.Y+2);
+            //var s2 = this.PointToScreen(p2);
+            //var m = e.Graphics.MeasureString($"{s2}", this.Font);
+            //e.Graphics.DrawString($"{s2.X},{s2.Y}", this.Font, br, s2.X-m.Width-2, s2.Y-m.Height-2);
         }
 
         private void CaptureForm_KeyDown(object sender, KeyEventArgs e)
@@ -186,6 +187,14 @@ namespace SnapScreens
             pic1.Invalidate();
         }
 
+        void SelectAll()
+        {
+            //SelRect = ImageBounds;
+            p1 = Point.Empty;
+            p2 = Point.Empty + image.Size;
+            pic1.Invalidate();
+        }
+
         private void CaptureForm_KeyUp(object sender, KeyEventArgs e)
         {
             Debug.WriteLine($"capture KeyUp({e.Modifiers}, {e.KeyCode})");
@@ -197,9 +206,9 @@ namespace SnapScreens
 
             case Keys.Enter:
                 if (p1.X == p2.X || p1.Y == p2.Y)
-                    SelRect = ImageBounds;
+                    SelectAll();
 
-                _ = new ImageForm(this.PointToScreen(SelRect.Location), GetCropped(SelRect));
+                _ = new ImageForm(ID, this.PointToScreen(SelRect.Location), GetCropped(SelRect));
 
                 this.Close();
                 break;
@@ -219,7 +228,7 @@ namespace SnapScreens
 
             case Keys.A:
                 // CTRL-A: select all
-                SelRect = ImageBounds;
+                SelectAll();
                 break;
 
             case Keys.Left:

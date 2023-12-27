@@ -17,15 +17,13 @@ namespace SnapScreens
             }
 
             // load application settings
-            //if (!Properties.Settings.Default.settings_is_valid) {
-            //    Properties.Settings.Default.Upgrade();
-            //    Properties.Settings.Default.settings_is_valid = true;
-            //    Properties.Settings.Default.Save();
-            //}
-            //var hotkey = (Keys)Enum.Parse(typeof(Keys), Properties.Settings.Default.HotKey);
-            //var modkeys = (MODKEY)Properties.Settings.Default.ModKeys;
-            var hotkey = Keys.F2;
-            var modkeys = MODKEY.ALT | MODKEY.CONTROL;
+            if (!Properties.Settings.Default.settings_is_valid) {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.settings_is_valid = true;
+                Properties.Settings.Default.Save();
+            }
+            var hotkey = (Keys)Enum.Parse(typeof(Keys), Properties.Settings.Default.HotKey);
+            var modkeys = (MODKEY)Properties.Settings.Default.ModKeys;
 
             // register global hot key
             for (int i = 1; i < 100; i++)
@@ -77,7 +75,7 @@ namespace SnapScreens
 
             if (m.Msg == WM_HOTKEY && (int)m.WParam == hotkey_id) {
                 Debug.WriteLine($"hotkey pressed at {Cursor.Position}");
-                new CaptureForm(Cursor.Position);
+                _ = new CaptureForm(Cursor.Position);
             }
         }
 
@@ -123,9 +121,6 @@ namespace SnapScreens
 
             //Properties.Settings.Default.Save();
         }
-
-
-
 
     }
 }

@@ -11,11 +11,13 @@ namespace SnapScreens
             InitializeComponent();
         }
 
-        public ImageForm(Point location, Bitmap bitmap)
+        public ImageForm(string id, Point location, Bitmap bitmap)
         {
             InitializeComponent();
 
-            Image = bitmap;
+            rec.ID = id;
+            this.Text = id;
+            image = bitmap;
             this.Show();
             this.Location = location;
             this.ClientSize = bitmap.Size;
@@ -30,14 +32,14 @@ namespace SnapScreens
             var bitmap = new Bitmap(filename);
             Debug.WriteLine($" bitmap size = {bitmap.Size}");
 
-            Image = bitmap;
+            image = bitmap;
 
             //this.Location = bounds.Location;
             //this.WindowState = FormWindowState.Normal;
             this.Show();
         }
 
-        Bitmap Image
+        Bitmap image
         {
             set {
                 pic1.Image = value;
