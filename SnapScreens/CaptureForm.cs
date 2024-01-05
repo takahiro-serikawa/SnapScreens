@@ -11,8 +11,8 @@ namespace SnapScreens
         {
             InitializeComponent();
 
-            this.ID = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            Debug.WriteLine($"capture new {ID}");
+            //this.ID = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            Debug.WriteLine($"capture new {this.timestamp}");
 
             var bounds = Screen.GetBounds(location);
             //rec.ScreenRect = new xRectangle(bounds);
@@ -98,8 +98,9 @@ namespace SnapScreens
             }
         }
 
-        readonly string ID;
+        //readonly string ID;
         Bitmap image;
+        readonly DateTime timestamp = DateTime.Now;
 
         private void pic1_Paint(object sender, PaintEventArgs e)
         {
@@ -199,25 +200,33 @@ namespace SnapScreens
         {
             Debug.WriteLine($"capture KeyUp({e.Modifiers}, {e.KeyCode})");
 
-            switch (e.KeyCode) {
-            case Keys.Escape:
+            switch ((e.KeyCode, e.Modifiers)) {
+            case (Keys.Escape, Keys.None):
                 this.Close();
                 break;
 
-            case Keys.Enter:
+            case (Keys.Enter, Keys.None):
                 if (p1.X == p2.X || p1.Y == p2.Y)
                     SelectAll();
 
-                _ = new ImageForm(ID, this.PointToScreen(SelRect.Location), GetCropped(SelRect));
+                _ = new ImageForm(this.PointToScreen(SelRect.Location), GetCropped(SelRect));
 
                 this.Close();
                 break;
 
-            case Keys.Tab:
+            case (Keys.Enter, Keys.Shift):
+                if (p1.X == p2.X || p1.Y == p2.Y)
+                    SelectAll();
+
+                _ = new ImageForm(this.PointToScreen(SelRect.Location), GetCropped(SelRect));
+
+                break;
+
+            case (Keys.Tab, Keys.None):
                 SelectNextRect();
                 break;
 
-            case Keys.S:
+            case (Keys.S, Keys.Control):
                 // CTRL-S: export to image file
                 //saveFileDialog1.FileName = _filename;
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
@@ -226,31 +235,36 @@ namespace SnapScreens
                 }
                 break;
 
-            case Keys.A:
+            case (Keys.A, Keys.Control):
                 // CTRL-A: select all
                 SelectAll();
                 break;
 
-            case Keys.Left:
-            case Keys.Right:
-            case Keys.Up:
-            case Keys.Down:
-                // finish moving by cursor key
-                if (p1.X != p2.X && p1.Y != p2.Y)
-                    Clipboard.SetImage(GetCropped(SelRect));
-                break;
-
-            case Keys.L:    // for debug
+            case (Keys.L, Keys.Control):    // for debug
                 pic1.Invalidate();
                 break;
 
-            case Keys.M:    // for debug
+            case (Keys.M, Keys.Control):    // for debug
                 if (this.WindowState == FormWindowState.Maximized)
                     this.WindowState = FormWindowState.Normal;
                 else
                     this.WindowState = FormWindowState.Maximized;
                 break;
+
+            default:
+                switch (e.KeyCode) {
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Down:
+                    // finish moving by cursor key
+                    if (p1.X != p2.X && p1.Y != p2.Y)
+                        Clipboard.SetImage(GetCropped(SelRect));
+                    break;
+                }
+                break;
             }
+
         }
 
         Bitmap GetCropped(Rectangle selRect)
