@@ -1,5 +1,7 @@
 ﻿Public Class Form2
     Public Sub New()
+        InitializeComponent()
+
         ' カーソルのある方のスクリーンを画像としてキャプチャ
         Dim bounds = Screen.GetBounds(Cursor.Position)
         Dim captured As New Bitmap(bounds.Width, bounds.Height)
