@@ -10,16 +10,17 @@ using System.Windows.Forms;
 
 namespace SnapScreens
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT
+    {
+        public Int32 Left;
+        public Int32 Top;
+        public Int32 Right;
+        public Int32 Bottom;
+    }
+
     internal class EnumWin
     {
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public Int32 Left;
-            public Int32 Top;
-            public Int32 Right;
-            public Int32 Bottom;
-        }
 
         public const int GWL_STYLE = -16;
         public const int GWL_EXSTYLE = -20;
@@ -56,11 +57,11 @@ namespace SnapScreens
 
         public static List<Rectangle> EnumWindowsOnScreen()
         {
-            Dictionary<Rectangle, int> bounds = new Dictionary<Rectangle, int>();
+            var bounds = new Dictionary<Rectangle, int>();
             EnumWindows((hWnd, lParam) => {
                 int textLen = GetWindowTextLength(hWnd);
-                StringBuilder tsb = new StringBuilder(textLen + 1);
-                StringBuilder csb = new StringBuilder(256);
+                var tsb = new StringBuilder(textLen + 1);
+                var csb = new StringBuilder(256);
                 if (0 < textLen) {
                     GetWindowText(hWnd, tsb, tsb.Capacity);
                     GetClassName(hWnd, csb, csb.Capacity);
@@ -76,9 +77,8 @@ namespace SnapScreens
                 //if (Screen.FromHandle(hWnd).DeviceName == Screen.AllScreens[screenIndex].DeviceName) {
                 int style = GetWindowLong(hWnd, GWL_STYLE);
                 int exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
-                RECT rect = new RECT() { Left=0, Top=0, Right=0, Bottom=0 };
-                if ((style & WS_VISIBLE) != 0 && (style & WS_BORDER) != 0 && (exStyle & WS_EX_TOOLWINDOW) == 0) {
-                //if ((style & WS_VISIBLE) != 0) {
+                                if ((style & WS_VISIBLE) != 0 && (exStyle & WS_EX_TOOLWINDOW) == 0) {
+                    RECT rect;// = new RECT() { Left=0, Top=0, Right=0, Bottom=0 };
                     if (GetWindowRect(hWnd, out rect)) {
                         var r = new Rectangle(rect.Left, rect.Top, rect.Right-rect.Left, rect.Bottom-rect.Top);
                         bounds[r] = 1;

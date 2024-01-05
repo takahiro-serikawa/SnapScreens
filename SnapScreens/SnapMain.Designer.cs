@@ -37,6 +37,12 @@
             QuitItem = new ToolStripMenuItem();
             applyButton = new Button();
             openFileDialog1 = new OpenFileDialog();
+            saveFileDialog1 = new SaveFileDialog();
+            HotKeyCombo = new ComboBox();
+            label1 = new Label();
+            Alt = new CheckBox();
+            Control = new CheckBox();
+            Shift = new CheckBox();
             contextMenuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -46,6 +52,7 @@
             notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
             notifyIcon1.Text = "snap screens";
             notifyIcon1.Visible = true;
+            notifyIcon1.Click += SettingsItem_Click;
             // 
             // contextMenuStrip1
             // 
@@ -94,13 +101,71 @@
             // openFileDialog1
             // 
             openFileDialog1.DefaultExt = "png";
-            openFileDialog1.FileName = "openFileDialog1";
+            openFileDialog1.FileName = "*.png";
+            // 
+            // saveFileDialog1
+            // 
+            saveFileDialog1.DefaultExt = "png";
+            saveFileDialog1.FileName = "*.png";
+            // 
+            // HotKeyCombo
+            // 
+            HotKeyCombo.FormattingEnabled = true;
+            HotKeyCombo.Location = new Point(169, 52);
+            HotKeyCombo.Name = "HotKeyCombo";
+            HotKeyCombo.Size = new Size(242, 40);
+            HotKeyCombo.TabIndex = 2;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(71, 55);
+            label1.Name = "label1";
+            label1.Size = new Size(87, 32);
+            label1.TabIndex = 3;
+            label1.Text = "hotkey";
+            label1.TextAlign = ContentAlignment.TopRight;
+            // 
+            // Alt
+            // 
+            Alt.AutoSize = true;
+            Alt.Location = new Point(169, 114);
+            Alt.Name = "Alt";
+            Alt.Size = new Size(83, 36);
+            Alt.TabIndex = 4;
+            Alt.Text = "ALT";
+            Alt.UseVisualStyleBackColor = true;
+            // 
+            // Control
+            // 
+            Control.AutoSize = true;
+            Control.Location = new Point(169, 156);
+            Control.Name = "Control";
+            Control.Size = new Size(152, 36);
+            Control.TabIndex = 5;
+            Control.Text = "CONTROL";
+            Control.UseVisualStyleBackColor = true;
+            // 
+            // Shift
+            // 
+            Shift.AutoSize = true;
+            Shift.Location = new Point(169, 198);
+            Shift.Name = "Shift";
+            Shift.Size = new Size(107, 36);
+            Shift.TabIndex = 6;
+            Shift.Text = "SHIFT";
+            Shift.UseVisualStyleBackColor = true;
             // 
             // SnapMain
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(867, 576);
+            Controls.Add(Shift);
+            Controls.Add(Control);
+            Controls.Add(Alt);
+            Controls.Add(label1);
+            Controls.Add(HotKeyCombo);
             Controls.Add(applyButton);
             Margin = new Padding(4, 5, 4, 5);
             MaximizeBox = false;
@@ -109,8 +174,10 @@
             ShowInTaskbar = false;
             Text = "SnapScreens";
             FormClosing += SnapSettings_FormClosing;
+            Load += SnapMain_Load;
             contextMenuStrip1.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -123,6 +190,12 @@
         private System.Windows.Forms.Button applyButton;
         private System.Windows.Forms.ToolStripMenuItem importItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private SaveFileDialog saveFileDialog1;
+        private ComboBox HotKeyCombo;
+        private Label label1;
+        private CheckBox Alt;
+        private CheckBox Control;
+        private CheckBox Shift;
     }
 }
 

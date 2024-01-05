@@ -11,8 +11,8 @@ namespace SnapScreens
         {
             InitializeComponent();
 
-            this.ID = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            Debug.WriteLine($"capture new {ID}");
+            //this.ID = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            Debug.WriteLine($"capture new {this.timestamp}");
 
             var bounds = Screen.GetBounds(location);
             //rec.ScreenRect = new xRectangle(bounds);
@@ -30,6 +30,7 @@ namespace SnapScreens
             this.Location = bounds.Location;
             this.TopMost = true;
             this.Show();
+            this.Activate();
             this.TopMost = false;
             this.WindowState = FormWindowState.Maximized;
         }
@@ -51,28 +52,20 @@ namespace SnapScreens
         void SelectNextRect()
         {
             otherIndex = (otherIndex+1) % otherRects.Count;
-            SelRect = this.RectangleToClient(otherRects[otherIndex]);
+            //SelRect = this.RectangleToClient(otherRects[otherIndex]);
+            var r = this.RectangleToClient(otherRects[otherIndex]);
+            p1 = r.Location;
+            p2 = r.Location + r.Size;
+            pic1.Invalidate();
         }
 
 
         bool isSelecting = false;
         Point p1 = Point.Empty;
         Point p2 = Point.Empty;
-        Rectangle SelRect
-        {
-            get {
-                return new Rectangle(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y), Math.Abs(p2.X-p1.X), Math.Abs(p2.Y-p1.Y));
-            }
-            set {
-                p1.X = value.X;
-                p1.Y = value.Y;
-                p2.X = value.X + value.Width;
-                p2.Y = value.Y + value.Height;
-                pic1.Invalidate();
-            }
-        }
+        Rectangle SelRect => new(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y), Math.Abs(p2.X-p1.X), Math.Abs(p2.Y-p1.Y));
 
-        Rectangle ImageBounds => new(Point.Empty, image.Size);
+        //Rectangle ImageBounds => new(Point.Empty, image.Size);
 
         private void pic1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -105,8 +98,9 @@ namespace SnapScreens
             }
         }
 
-        readonly string ID;
+        //readonly string ID;
         Bitmap image;
+        readonly DateTime timestamp = DateTime.Now;
 
         private void pic1_Paint(object sender, PaintEventArgs e)
         {
@@ -129,6 +123,14 @@ namespace SnapScreens
             pen1.Color = Color.Red;
             pen1.DashStyle = DashStyle.Dash;
             e.Graphics.DrawRectangle(pen1, SelRect.X, SelRect.Y, SelRect.Width-1, SelRect.Height-1);
+
+            // draw coordinates
+            //using var br = new SolidBrush(Color.Red);
+            //var s1 = this.PointToScreen(p1);
+            //e.Graphics.DrawString($"{s1}", this.Font, br, s1.X+2, s1.Y+2);
+            //var s2 = this.PointToScreen(p2);
+            //var m = e.Graphics.MeasureString($"{s2}", this.Font);
+            //e.Graphics.DrawString($"{s2.X},{s2.Y}", this.Font, br, s2.X-m.Width-2, s2.Y-m.Height-2);
         }
 
         private void CaptureForm_KeyDown(object sender, KeyEventArgs e)
@@ -186,29 +188,45 @@ namespace SnapScreens
             pic1.Invalidate();
         }
 
+        void SelectAll()
+        {
+            //SelRect = ImageBounds;
+            p1 = Point.Empty;
+            p2 = Point.Empty + image.Size;
+            pic1.Invalidate();
+        }
+
         private void CaptureForm_KeyUp(object sender, KeyEventArgs e)
         {
             Debug.WriteLine($"capture KeyUp({e.Modifiers}, {e.KeyCode})");
 
-            switch (e.KeyCode) {
-            case Keys.Escape:
+            switch ((e.KeyCode, e.Modifiers)) {
+            case (Keys.Escape, Keys.None):
                 this.Close();
                 break;
 
-            case Keys.Enter:
+            case (Keys.Enter, Keys.None):
                 if (p1.X == p2.X || p1.Y == p2.Y)
-                    SelRect = ImageBounds;
+                    SelectAll();
 
                 _ = new ImageForm(this.PointToScreen(SelRect.Location), GetCropped(SelRect));
 
                 this.Close();
                 break;
 
-            case Keys.Tab:
+            case (Keys.Enter, Keys.Shift):
+                if (p1.X == p2.X || p1.Y == p2.Y)
+                    SelectAll();
+
+                _ = new ImageForm(this.PointToScreen(SelRect.Location), GetCropped(SelRect));
+
+                break;
+
+            case (Keys.Tab, Keys.None):
                 SelectNextRect();
                 break;
 
-            case Keys.S:
+            case (Keys.S, Keys.Control):
                 // CTRL-S: export to image file
                 //saveFileDialog1.FileName = _filename;
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
@@ -217,31 +235,36 @@ namespace SnapScreens
                 }
                 break;
 
-            case Keys.A:
+            case (Keys.A, Keys.Control):
                 // CTRL-A: select all
-                SelRect = ImageBounds;
+                SelectAll();
                 break;
 
-            case Keys.Left:
-            case Keys.Right:
-            case Keys.Up:
-            case Keys.Down:
-                // finish moving by cursor key
-                if (p1.X != p2.X && p1.Y != p2.Y)
-                    Clipboard.SetImage(GetCropped(SelRect));
-                break;
-
-            case Keys.L:    // for debug
+            case (Keys.L, Keys.Control):    // for debug
                 pic1.Invalidate();
                 break;
 
-            case Keys.M:    // for debug
+            case (Keys.M, Keys.Control):    // for debug
                 if (this.WindowState == FormWindowState.Maximized)
                     this.WindowState = FormWindowState.Normal;
                 else
                     this.WindowState = FormWindowState.Maximized;
                 break;
+
+            default:
+                switch (e.KeyCode) {
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Down:
+                    // finish moving by cursor key
+                    if (p1.X != p2.X && p1.Y != p2.Y)
+                        Clipboard.SetImage(GetCropped(SelRect));
+                    break;
+                }
+                break;
             }
+
         }
 
         Bitmap GetCropped(Rectangle selRect)

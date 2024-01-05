@@ -9,35 +9,47 @@ namespace SnapScreens
         public ImageForm()
         {
             InitializeComponent();
+
+            instances.Add(this);
         }
 
         public ImageForm(Point location, Bitmap bitmap)
         {
             InitializeComponent();
 
-            Image = bitmap;
-            this.Show();
+            instances.Add(this);
+
+            //rec = new ImageRec(id);
+            //this.Text = id;
+            image = bitmap;
             this.Location = location;
             this.ClientSize = bitmap.Size;
+            this.Show();
         }
+
+        ~ImageForm()
+        {
+            instances.Remove(this);
+        }
+
+        private static List<ImageForm> instances = new List<ImageForm>();
 
         public void LoadImage(string filename)
         {
             rec.ID = "";
             //_filename = filename;
-            Debug.WriteLine($"capture {Caption} new");
+            Debug.WriteLine($"capture {rec.ID} new");
 
-            var bitmap = new Bitmap(filename);
-            Debug.WriteLine($" bitmap size = {bitmap.Size}");
-
-            Image = bitmap;
+            image = new Bitmap(filename);
 
             //this.Location = bounds.Location;
             //this.WindowState = FormWindowState.Normal;
             this.Show();
         }
 
-        Bitmap Image
+        readonly ImageRec rec = new ImageRec();
+
+        Bitmap image
         {
             set {
                 pic1.Image = value;
@@ -47,17 +59,10 @@ namespace SnapScreens
            // get { return pic1.Image; }
         }
 
-        public struct xRectangle
-        {
-            public int x, y, width, height;
-            public xRectangle(Rectangle r)
-            {
-                x = r.X;
-                y = r.Y;
-                width = r.Width;
-                height = r.Height;
-            }
-        }
+        //public struct xRectangle
+        //{
+        //    public int x, y, width, height;
+        //}
 
         // image list
         [XmlRoot("item")]
@@ -67,22 +72,25 @@ namespace SnapScreens
             public string ID;
 
             [XmlElement("bounds_rect")]
-            public xRectangle ScreenRect;
+            //public xRectangle ScreenRect;
+            public RECT ScreenRect;
 
             [XmlElement("select_rect")]
-            public xRectangle SelectRect;
+            //public xRectangle SelectRect;
+            public RECT SelectRect;
 
             //[XmlIgnore]
             //public Bitmap Bitmap;
+
+            //public ImageRec(string ID) { this.ID = ID; }
         }
 
         public static string SnapPath = "";
 
-        readonly ImageRec rec = new ImageRec();
 
         void SaveRec()
         {
-            XmlSerializer ser = new XmlSerializer(typeof(ImageRec));
+            var ser = new XmlSerializer(typeof(ImageRec));
 
             var id_xml = Path.Combine(SnapPath, rec.ID+".xml");
             using (var wr = new StreamWriter(id_xml)) {
@@ -95,10 +103,10 @@ namespace SnapScreens
 
         //string _filename = "";
 
-        string Caption
-        {
-            get { return rec.ID; }
-        }
+        //string Caption
+        //{
+        //    get { return rec.ID; }
+        //}
 
         private void pic1_Paint(object sender, PaintEventArgs e)
         {
@@ -122,14 +130,41 @@ namespace SnapScreens
 
         private void ImageForm_KeyDown(object sender, KeyEventArgs e)
         {
-            Debug.WriteLine($"image {Caption} KeyDown({e.Modifiers}, {e.KeyCode})");
+            Debug.WriteLine($"image {rec.ID} KeyDown({e.Modifiers}, {e.KeyCode})");
 
         }
 
         private void ImageForm_KeyUp(object sender, KeyEventArgs e)
         {
-            Debug.WriteLine($"image {Caption} KeyUp({e.Modifiers}, {e.KeyCode})");
+            Debug.WriteLine($"image {rec.ID} KeyUp({e.Modifiers}, {e.KeyCode})");
 
+            switch ((e.KeyCode, e.Modifiers)) {
+            case (Keys.S, Keys.Control):
+                //SnapMain.SaveImageAs(pic1.Image);
+                break;
+
+            case (Keys.W, Keys.Control):
+                this.Close();
+                break;
+
+            case (Keys.C, Keys.Control):
+                Debug.WriteLine($" copy ({pic1.Image.Size})");
+                Clipboard.SetImage(pic1.Image);
+                break;
+
+            case (Keys.Tab, 0):
+                ActivateNext();
+                break;
+            }
+        }
+
+        void ActivateNext()
+        {
+            int index = instances.IndexOf(this);
+            index = (index+1) % instances.Count;
+            instances[index].Activate();
+
+            Debug.WriteLine($" activate {instances[index].rec.ID}");
         }
 
     }
