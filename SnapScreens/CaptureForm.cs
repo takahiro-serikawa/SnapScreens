@@ -14,12 +14,11 @@ namespace SnapScreens
             //this.ID = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             Debug.WriteLine($"capture new {this.timestamp}");
 
-            var bounds = Screen.GetBounds(location);
-            //rec.ScreenRect = new xRectangle(bounds);
-            Debug.WriteLine($" screen bounds = {bounds}");
-            var captured = new Bitmap(bounds.Width, bounds.Height);
+            ScreenBounds = Screen.GetBounds(location);
+            Debug.WriteLine($" screen bounds = {ScreenBounds}");
+            var captured = new Bitmap(ScreenBounds.Width, ScreenBounds.Height);
             using var g = Graphics.FromImage(captured);
-            g.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
+            g.CopyFromScreen(ScreenBounds.Location, Point.Empty, ScreenBounds.Size);
 
             image = captured;
             pic1.Size = captured.Size;
@@ -27,12 +26,12 @@ namespace SnapScreens
 
             otherRects = EnumWin.EnumWindowsOnScreen();
 
-            this.Location = bounds.Location;
+            this.Location = ScreenBounds.Location;
             this.TopMost = true;
             this.Show();
-            this.Activate();
+            //this.Activate();
             this.TopMost = false;
-            this.WindowState = FormWindowState.Maximized;
+            //this.WindowState = FormWindowState.Maximized;
         }
 
         private void CaptureForm_Resize(object sender, EventArgs e)
@@ -52,20 +51,18 @@ namespace SnapScreens
         void SelectNextRect()
         {
             otherIndex = (otherIndex+1) % otherRects.Count;
-            //SelRect = this.RectangleToClient(otherRects[otherIndex]);
-            var r = this.RectangleToClient(otherRects[otherIndex]);
-            p1 = r.Location;
-            p2 = r.Location + r.Size;
+            var rect = this.RectangleToClient(otherRects[otherIndex]);
+            p1 = rect.Location;
+            p2 = rect.Location + rect.Size;
             pic1.Invalidate();
         }
 
 
+        Rectangle ScreenBounds;
         bool isSelecting = false;
         Point p1 = Point.Empty;
         Point p2 = Point.Empty;
         Rectangle SelRect => new(Math.Min(p1.X, p2.X), Math.Min(p1.Y, p2.Y), Math.Abs(p2.X-p1.X), Math.Abs(p2.Y-p1.Y));
-
-        //Rectangle ImageBounds => new(Point.Empty, image.Size);
 
         private void pic1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -123,6 +120,14 @@ namespace SnapScreens
             pen1.Color = Color.Red;
             pen1.DashStyle = DashStyle.Dash;
             e.Graphics.DrawRectangle(pen1, SelRect.X, SelRect.Y, SelRect.Width-1, SelRect.Height-1);
+
+            //string s1 = $"{SelRect.Left}, {SelRect.Top}";
+            //e.Graphics.DrawString(s1, pic1.Font, Brushes.White, SelRect.Left+2+1, SelRect.Top+2+1);
+            //e.Graphics.DrawString(s1, pic1.Font, Brushes.Red, SelRect.Left+2, SelRect.Top+2);
+            //string s2 = $"{SelRect.Right}, {SelRect.Bottom}";
+            //var m2 = e.Graphics.MeasureString(s2, pic1.Font);
+            //e.Graphics.DrawString(s2, pic1.Font, Brushes.White, SelRect.Right-m2.Width-2+1, SelRect.Bottom-m2.Height-2+1);
+            //e.Graphics.DrawString(s2, pic1.Font, Brushes.Red, SelRect.Right-m2.Width-2, SelRect.Bottom-m2.Height-2);
 
             // draw coordinates
             //using var br = new SolidBrush(Color.Red);
@@ -206,20 +211,14 @@ namespace SnapScreens
                 break;
 
             case (Keys.Enter, Keys.None):
-                if (p1.X == p2.X || p1.Y == p2.Y)
-                    SelectAll();
-
-                _ = new ImageForm(this.PointToScreen(SelRect.Location), GetCropped(SelRect));
-
-                this.Close();
-                break;
-
             case (Keys.Enter, Keys.Shift):
                 if (p1.X == p2.X || p1.Y == p2.Y)
                     SelectAll();
 
-                _ = new ImageForm(this.PointToScreen(SelRect.Location), GetCropped(SelRect));
+                _=new ImageForm(ScreenBounds, SelRect, image);
 
+                if (!e.Shift)
+                    this.Close();
                 break;
 
             case (Keys.Tab, Keys.None):

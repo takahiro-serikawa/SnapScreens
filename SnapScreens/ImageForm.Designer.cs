@@ -56,6 +56,7 @@
             Text = "ImageForm";
             FormClosing += ImageForm_FormClosing;
             FormClosed += ImageForm_FormClosed;
+            Scroll += ImageForm_Scroll;
             KeyDown += ImageForm_KeyDown;
             KeyUp += ImageForm_KeyUp;
             Resize += ImageForm_Resize;

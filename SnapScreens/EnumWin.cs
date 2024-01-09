@@ -10,24 +10,23 @@ using System.Windows.Forms;
 
 namespace SnapScreens
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RECT
-    {
-        public Int32 Left;
-        public Int32 Top;
-        public Int32 Right;
-        public Int32 Bottom;
-    }
-
     internal class EnumWin
     {
-
         public const int GWL_STYLE = -16;
         public const int GWL_EXSTYLE = -20;
 
         public const int WS_VISIBLE = 0x10000000;
         public const int WS_BORDER = 0x00800000;
         public const int WS_EX_TOOLWINDOW = 0x00000080;
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public Int32 Left;
+            public Int32 Top;
+            public Int32 Right;
+            public Int32 Bottom;
+        }
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]

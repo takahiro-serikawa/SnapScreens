@@ -13,18 +13,24 @@ namespace SnapScreens
             instances.Add(this);
         }
 
-        public ImageForm(Point location, Bitmap bitmap)
+        public ImageForm(Rectangle screenBounds, Rectangle selRect, Bitmap screenBitmap)
         {
             InitializeComponent();
 
+            rec.ScreenRect = new xRect(screenBounds);
+            rec.SelectRect = new xRect(selRect);
             instances.Add(this);
 
-            //rec = new ImageRec(id);
-            //this.Text = id;
-            image = bitmap;
-            this.Location = location;
-            this.ClientSize = bitmap.Size;
+            pic1.Image = screenBitmap;
+            pic1.Size = screenBitmap.Size;
+
+            var rectOnScreen = selRect;
+            rectOnScreen.Offset(screenBounds.Location);
+            this.Location = rectOnScreen.Location;
+            this.ClientSize = rectOnScreen.Size;
             this.Show();
+
+            this.AutoScrollPosition = selRect.Location;
         }
 
         ~ImageForm()
@@ -40,29 +46,12 @@ namespace SnapScreens
             //_filename = filename;
             Debug.WriteLine($"capture {rec.ID} new");
 
-            image = new Bitmap(filename);
+            //xx image = new Bitmap(filename);
 
             //this.Location = bounds.Location;
             //this.WindowState = FormWindowState.Normal;
             this.Show();
         }
-
-        readonly ImageRec rec = new ImageRec();
-
-        Bitmap image
-        {
-            set {
-                pic1.Image = value;
-                pic1.Size = value.Size;
-                pic1.Invalidate();
-            }
-           // get { return pic1.Image; }
-        }
-
-        //public struct xRectangle
-        //{
-        //    public int x, y, width, height;
-        //}
 
         // image list
         [XmlRoot("item")]
@@ -72,12 +61,10 @@ namespace SnapScreens
             public string ID;
 
             [XmlElement("bounds_rect")]
-            //public xRectangle ScreenRect;
-            public RECT ScreenRect;
+            public xRect ScreenRect;
 
             [XmlElement("select_rect")]
-            //public xRectangle SelectRect;
-            public RECT SelectRect;
+            public xRect SelectRect;
 
             //[XmlIgnore]
             //public Bitmap Bitmap;
@@ -85,28 +72,21 @@ namespace SnapScreens
             //public ImageRec(string ID) { this.ID = ID; }
         }
 
-        public static string SnapPath = "";
+        readonly ImageRec rec = new();
 
+        public static string SnapPath = "";
 
         void SaveRec()
         {
             var ser = new XmlSerializer(typeof(ImageRec));
 
             var id_xml = Path.Combine(SnapPath, rec.ID+".xml");
-            using (var wr = new StreamWriter(id_xml)) {
-                ser.Serialize(wr, rec);
-            }
+            using var wr = new StreamWriter(id_xml);
+            ser.Serialize(wr, rec);
 
             var id_png = Path.Combine(SnapPath, rec.ID+".png");
             pic1.Image.Save(id_png);
         }
-
-        //string _filename = "";
-
-        //string Caption
-        //{
-        //    get { return rec.ID; }
-        //}
 
         private void pic1_Paint(object sender, PaintEventArgs e)
         {
@@ -153,18 +133,28 @@ namespace SnapScreens
                 break;
 
             case (Keys.Tab, 0):
-                ActivateNext();
+                ActivateNext(+1);
                 break;
+
+            case (Keys.Tab, Keys.Shift):
+                ActivateNext(-1);
+                break;
+
             }
         }
 
-        void ActivateNext()
+        void ActivateNext(int d)
         {
             int index = instances.IndexOf(this);
-            index = (index+1) % instances.Count;
+            index = (index+d) % instances.Count;
             instances[index].Activate();
 
-            Debug.WriteLine($" activate {instances[index].rec.ID}");
+            Debug.WriteLine($" activate #{index}: {instances[index].rec.ID}");
+        }
+
+        private void ImageForm_Scroll(object sender, ScrollEventArgs e)
+        {
+            Debug.WriteLine($"image {rec.ID} Scroll({e.Type}, {e.ScrollOrientation}, {e.OldValue}, {e.NewValue})");
         }
 
     }

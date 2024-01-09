@@ -163,7 +163,7 @@ namespace SnapScreens
             if (Shift.Checked)
                 modkeys |= MODKEY.SHIFT;
             Properties.Settings.Default.ModKeys = (int)modkeys;
-            
+
             Properties.Settings.Default.Save();
 
             RegisterHotKey(hotkey, modkeys);
@@ -175,5 +175,23 @@ namespace SnapScreens
                 bitmap.Save(saveFileDialog1.FileName);
             }
         }
+
+    }
+
+    public struct xRect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+
+        public xRect(Rectangle rect)
+        {
+            this.Left = rect.Left;
+            this.Top = rect.Top;
+            this.Right = rect.Right;
+            this.Bottom = rect.Bottom;
+        }
+
     }
 }

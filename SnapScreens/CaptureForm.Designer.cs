@@ -60,33 +60,32 @@
             label2.Location = new Point(551, 29);
             label2.Margin = new Padding(4, 0, 4, 0);
             label2.Name = "label2";
-            label2.Size = new Size(0, 32);
+            label2.Size = new Size(0, 30);
             label2.TabIndex = 2;
             // 
             // label3
             // 
             label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             label3.AutoSize = true;
-            label3.Location = new Point(531, 424);
+            label3.Location = new Point(531, 425);
             label3.Margin = new Padding(4, 0, 4, 0);
             label3.Name = "label3";
-            label3.Size = new Size(0, 32);
+            label3.Size = new Size(0, 30);
             label3.TabIndex = 3;
             // 
             // label4
             // 
             label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label4.AutoSize = true;
-            label4.Location = new Point(30, 424);
+            label4.Location = new Point(30, 425);
             label4.Margin = new Padding(4, 0, 4, 0);
             label4.Name = "label4";
-            label4.Size = new Size(0, 32);
+            label4.Size = new Size(0, 30);
             label4.TabIndex = 4;
             // 
             // CaptureForm
             // 
-            AutoScaleDimensions = new SizeF(13F, 32F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.None;
             AutoScroll = true;
             BackColor = Color.Gray;
             ClientSize = new Size(640, 480);
@@ -95,10 +94,12 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(pic1);
+            Font = new Font("Segoe UI", 7.875F, FontStyle.Regular, GraphicsUnit.Point);
             KeyPreview = true;
             Margin = new Padding(4, 5, 4, 5);
             Name = "CaptureForm";
             StartPosition = FormStartPosition.Manual;
+            WindowState = FormWindowState.Maximized;
             FormClosed += CaptureForm_FormClosed;
             KeyDown += CaptureForm_KeyDown;
             KeyUp += CaptureForm_KeyUp;
