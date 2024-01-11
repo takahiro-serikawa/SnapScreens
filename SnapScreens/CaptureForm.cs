@@ -31,7 +31,7 @@ namespace SnapScreens
             this.Show();
             //this.Activate();
             this.TopMost = false;
-            //this.WindowState = FormWindowState.Maximized;
+            this.WindowState = FormWindowState.Maximized;
         }
 
         private void CaptureForm_Resize(object sender, EventArgs e)
