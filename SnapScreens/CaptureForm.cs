@@ -69,9 +69,39 @@ namespace SnapScreens
             Debug.WriteLine($"capture MouseDown({e.Button}, {e.Location})");
 
             if (e.Button == MouseButtons.Left) {
-                isSelecting = true;
-                p1 = e.Location;
+                if (IsOnSelRect(e.Location)) {
+                    isSelecting = true;
+                } else {
+                    isSelecting = true;
+                    p1 = e.Location;
+                }
             }
+        }
+
+        
+
+        bool IsOnSelRect(Point loc)
+        {
+            if (loc.IsOnPoint(p1)) {
+                (p2, p1)=(p1, p2);
+                return true;
+            }
+            if (loc.IsOnPoint(p2)) {
+                return true;
+            }
+
+            var q1 = new Point(p1.X, p2.Y);
+            var q2 = new Point(p2.X, p1.Y);
+            if (loc.IsOnPoint(q1)) {
+                (p1, p2) = (q2, q1);
+                return true;
+            }
+            if (loc.IsOnPoint(q2)) {
+                (p1, p2) = (q1, q2);
+                return true;
+            }
+
+            return false;
         }
 
         private void pic1_MouseMove(object sender, MouseEventArgs e)
@@ -275,6 +305,18 @@ namespace SnapScreens
             g.DrawImage(image, new Rectangle(Point.Empty, cropped.Size), selRect, GraphicsUnit.Pixel);
 
             return cropped;
+        }
+
+    }
+
+    public static class PointExtensions
+    {
+        const int M = 5;
+
+        public static bool IsOnPoint(this Point p, Point p2)
+        {
+            return p2.X-M <= p.X && p.X <= p2.X+M
+                && p2.Y-M <= p.Y && p.Y <= p2.Y+M;
         }
 
     }

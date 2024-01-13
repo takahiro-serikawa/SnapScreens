@@ -30,7 +30,10 @@ namespace SnapScreens
             this.ClientSize = rectOnScreen.Size;
             this.Show();
 
-            this.AutoScrollPosition = selRect.Location;
+            if (this.AutoScroll)
+                this.AutoScrollPosition = selRect.Location;
+            else
+                pic1.Location = new Point(-selRect.X, -selRect.Y);
         }
 
         ~ImageForm()
@@ -95,7 +98,7 @@ namespace SnapScreens
 
         private void ImageForm_Resize(object sender, EventArgs e)
         {
-            Debug.WriteLine($"image {rec.ID} Resize({this.WindowState}, {this.Size})");
+            Debug.WriteLine($"image {rec.ID} Resize({this.WindowState}, {this.Size}, ClientSize={this.ClientSize})");
         }
 
         private void ImageForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -138,6 +141,19 @@ namespace SnapScreens
 
             case (Keys.Tab, Keys.Shift):
                 ActivateNext(-1);
+                break;
+
+            case (Keys.B, Keys.Control):
+                var lastSize = this.ClientSize;
+                Debug.WriteLine($" ClientSize {lastSize}");
+                this.AutoScroll = !this.AutoScroll;
+                if (this.AutoScroll) {
+                    pic1.Location = Point.Empty;
+                    this.AutoScrollPosition = new Point(rec.SelectRect.Left, rec.SelectRect.Top);
+                } else {
+                    pic1.Location = new Point(-rec.SelectRect.Left, -rec.SelectRect.Top);
+                }
+                this.ClientSize = lastSize;
                 break;
 
             }
