@@ -11,6 +11,9 @@ namespace SnapScreens
         {
             InitializeComponent();
 
+            // benti
+            //Benti_IsOnSelRect2();
+
             //this.ID = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             Debug.WriteLine($"capture new {this.timestamp}");
 
@@ -78,8 +81,6 @@ namespace SnapScreens
             }
         }
 
-        
-
         bool IsOnSelRect(Point loc)
         {
             if (loc.IsOnPoint(p1)) {
@@ -103,7 +104,84 @@ namespace SnapScreens
 
             return false;
         }
+#if false
+        bool IsOnSelRect2(Point loc)
+        {
+            var corners = new List<Tuple<Point, Point>> {
+                //new(p1, p2),
+                //new(p2, p1),
+                new(new Point(p1.X, p1.Y), new Point(p2.X, p2.Y)),
+                new(new Point(p2.X, p2.Y), new Point(p1.X, p1.Y)),
+                new(new Point(p1.X, p2.Y), new Point(p2.X, p1.Y)),
+                new(new Point(p2.X, p1.Y), new Point(p1.X, p2.Y))
+            };
 
+            foreach (var c in corners) {
+                if (loc.IsOnPoint(c.Item1)) {
+                    p1 = c.Item2;
+                    p2 = c.Item1;   // = loc
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        const int M = 5;
+
+        bool IsOnSelRect3(Point p)
+        {
+            if (p1.X-M <= p.X && p.X <= p1.X+M) {
+                if (p1.Y-M <= p.Y && p.Y <= p1.Y+M) {
+                    (p2, p1)=(p1, p2);
+                    return true;
+                } else if (p2.Y-M <= p.Y && p.Y <= p2.Y+M) {
+                }
+            } else if (p2.X-M <= p.X && p.X <= p2.X+M) {
+                if (p1.Y-M <= p.Y && p.Y <= p1.Y+M) {
+                } else if (p2.Y-M <= p.Y && p.Y <= p2.Y+M) {
+                }
+            }
+
+            return false;
+        }
+
+        void Benti_IsOnSelRect2()
+        {
+            Random random = new();
+
+            p1.X = random.Next(2560);
+            p1.Y = random.Next(1920);
+            p2.X = random.Next(2560);
+            p2.Y = random.Next(1920);
+
+            const int N = 10000000;
+            var randomIntArray = new Point[N];
+
+            // 配列にランダムな整数を格納
+            for (int i = 0; i < N; i++) {
+                randomIntArray[i] = new Point(random.Next(2560), random.Next(1920));
+            }
+
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < N; i++) {
+                IsOnSelRect(randomIntArray[i]);
+            }
+            Debug.WriteLine($"IsOnSelRect; {sw.ElapsedMilliseconds} msec");
+
+            sw.Restart();
+            for (int i = 0; i < N; i++) {
+                IsOnSelRect2(randomIntArray[i]);
+            }
+            Debug.WriteLine($"IsOnSelRect2; {sw.ElapsedMilliseconds} msec");
+
+            sw.Restart();
+            for (int i = 0; i < N; i++) {
+                IsOnSelRect3(randomIntArray[i]);
+            }
+            Debug.WriteLine($"IsOnSelRect3; {sw.ElapsedMilliseconds} msec");
+        }
+#endif
         private void pic1_MouseMove(object sender, MouseEventArgs e)
         {
             //Debug.WriteLine($"capture MouseMove({e.Button}, {e.Location})");
